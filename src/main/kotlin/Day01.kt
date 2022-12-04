@@ -6,31 +6,37 @@ fun main() {
 }
 
 fun part01(file: String): Int {
-    val map = getCaloriesMap(file)
-    return map.maxBy { it.value }.value
+    return getCaloriesList(file).max()
 }
 
 fun part02(file: String): Int {
-    val map = getCaloriesMap(file)
-    var entryList = map.entries.stream().map { e -> e.value }.toList()
-    entryList = entryList.toMutableList()
-    entryList.sortDescending()
-    return entryList.take(3).sum()
+    return getCaloriesList(file).sortedDescending().take(3).sum()
 }
 
-private fun getCaloriesMap(file: String): MutableMap<Int, Int> {
+private fun getCaloriesList(file: String): Collection<Int> {
     var k = 0
-    val map = mutableMapOf<Int, Int>()
-    map[k] = 0
+    val map = mutableMapOf(k to 0)
     File(file).forEachLine { l ->
-        run {
-            if (l.isBlank()) {
-                k++
-                map[k] = 0
-            } else {
-                map[k] = map[k]!! + l.toInt()
-            }
+        if (l.isBlank()) {
+            k++
+            map[k] = 0
+        } else {
+            map[k] = map[k]!! + l.toInt()
         }
     }
-    return map
+    return map.values
+}
+
+
+private fun getCaloriesListAlt(file: String): List<Int> {
+    return File(file).useLines {
+        it.fold(Pair(0, emptyList<Int>())) {
+                (currentElf, allElves), line ->
+            if (line.isBlank()) {
+                Pair(0, allElves + currentElf)
+            } else {
+                Pair(currentElf + line.toInt(), allElves)
+            }
+        }
+    }.second
 }
