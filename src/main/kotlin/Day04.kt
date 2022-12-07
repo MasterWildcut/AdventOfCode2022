@@ -6,29 +6,31 @@ fun main() {
 }
 
 fun part07(fileName: String): Int {
-    return File(fileName).readLines()
-        .filter {
-            val pair = pair(it)
-            return@filter (pair.first.containsAll(pair.second) ||
-                    pair.second.containsAll(pair.first))
-        }.size
+    return File(fileName).useLines { lines ->
+        lines.filter {
+            val (firstRangeSet, secondRangeSet) = pair(it)
+            return@filter (firstRangeSet.containsAll(secondRangeSet) ||
+                    secondRangeSet.containsAll(firstRangeSet))
+        }.count()
+    }
 
 }
 
 fun part08(fileName: String): Int {
-    return File(fileName).readLines()
-        .filter {
-            val pair = pair(it)
-            return@filter (pair.first.intersect(pair.second).isNotEmpty())
-        }.size
+    return File(fileName).useLines { lines ->
+        lines.filter {
+            val (firstRangeSet, secondRangeSet) = pair(it)
+            return@filter (firstRangeSet.intersect(secondRangeSet).isNotEmpty())
+        }.count()
+    }
 }
 
 private fun pair(l: String): Pair<Set<Int>, Set<Int>> {
-    val split = l.split(",")
-    val firstRange = split[0].split("-")
-    val secondRange = split[1].split("-")
+    val (firstStart, firstEnd, secondStart, secondEnd) = l.split(',')
+        .flatMap { it.split('-') }
+        .map(String::toInt)
     return Pair(
-        IntRange(firstRange[0].toInt(), firstRange[1].toInt()).toSet(),
-        IntRange(secondRange[0].toInt(), secondRange[1].toInt()).toSet()
+        IntRange(firstStart, firstEnd).toSet(),
+        IntRange(secondStart, secondEnd).toSet()
     )
 }

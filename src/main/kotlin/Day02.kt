@@ -7,19 +7,15 @@ fun main() {
 }
 
 fun part03(fileName: String): Int {
-    var score = 0
-    File(fileName).forEachLine { l ->
-        run { score += play(l.split(" ")) }
+    return File(fileName).useLines { lines ->
+        lines.map { play(it.split(' ')) }.sum()
     }
-    return score
 }
 
 fun part04(fileName: String): Int {
-    var score = 0
-    File(fileName).forEachLine { l ->
-        run { score += play2(l.split(" ")) }
+    return File(fileName).useLines { lines ->
+        lines.map { play2(it.split(' ')) }.sum()
     }
-    return score
 }
 
 fun play2(plays: List<String>): Int {
@@ -47,30 +43,23 @@ private fun getScore(opponentPlay: Hand, myPlay: Hand): Int {
             Hand.SCISSOR -> if (myPlay == Hand.ROCK) score1 += 6
             Hand.PAPER -> if (myPlay == Hand.SCISSOR) score1 += 6
         }
+    }
 
-    }
-    score1 += when (myPlay) {
-        Hand.ROCK -> 1
-        Hand.PAPER -> 2
-        Hand.SCISSOR -> 3
-    }
+    score1 += myPlay.score
     return score1
 }
 
-enum class Hand {
-    ROCK,
-    PAPER,
-    SCISSOR;
+enum class Hand(val score: Int) {
+    ROCK(1),
+    PAPER(2),
+    SCISSOR(3);
 
     companion object {
         fun fromString(value: String): Hand {
             return when (value) {
-                "A" ->  ROCK
-                "X" ->  ROCK
-                "B" ->  PAPER
-                "Y" ->  PAPER
-                "C" ->  SCISSOR
-                "Z" ->  SCISSOR
+                "A", "X" ->  ROCK
+                "B", "Y" ->  PAPER
+                "C", "Z" ->  SCISSOR
                 else -> {throw InputMismatchException(value)}
             }
         }

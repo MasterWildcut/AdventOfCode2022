@@ -7,11 +7,11 @@ fun main() {
 
 fun part06(fileName: String): Int {
     var score = 0
-    val lines = File(fileName).useLines { it.toList() }
-    for (i in 0..(lines.size - 1) / 3) {
-        score += getBadgeScore(lines[3 * i], lines[3 * i + 1], lines[3 * i + 2])
+    return File(fileName).useLines { lines ->
+        lines.chunked(3).map {
+            getBadgeScore(it[0], it[1], it[2])
+        }.sum()
     }
-    return score
 }
 
 fun getBadgeScore(firstElf: String, secondElf: String, thirdElf: String): Int {
@@ -21,20 +21,17 @@ fun getBadgeScore(firstElf: String, secondElf: String, thirdElf: String): Int {
     firstSet.retainAll(secondSet)
     firstSet.retainAll(thirdSet)
     val badge = firstSet.first()
-    val alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    return alphabet.indexOf(badge) + 1
+    return badge.score()
 
 }
 
 fun part05(fileName: String): Int {
     var score = 0
     File(fileName).forEachLine { l ->
-        run {
-            val mid = (l.length / 2)
-            val firstComponent = l.substring(0, mid)
-            val secondComponent = l.substring(mid)
-            score += getPriorityOfWronglyPackedItem(firstComponent, secondComponent)
-        }
+        val mid = (l.length / 2)
+        val firstComponent = l.substring(0, mid)
+        val secondComponent = l.substring(mid)
+        score += getPriorityOfWronglyPackedItem(firstComponent, secondComponent)
     }
     return score
 }
@@ -44,7 +41,9 @@ fun getPriorityOfWronglyPackedItem(firstComponent: String, secondComponent: Stri
     val secondSet = secondComponent.toHashSet()
     firstSet.retainAll(secondSet)
     val missPackedItem = firstSet.first()
-    val alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    return alphabet.indexOf(missPackedItem) + 1
+    return missPackedItem.score()
 }
 
+private const val alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+private fun Char.score(): Int = alphabet.indexOf(this) + 1
